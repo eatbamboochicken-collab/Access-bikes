@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  >
+
+  <meta name="theme-color" content="#111111">
+
+  <title>Access Bikes — Fleet Dashboard</title>
+
+  <style>
+    :root {
+      --bg: #f5f5f3;
+      --surface: #ffffff;
+      --surface-soft: #f0f0ee;
+
+      --text: #171717;
+      --muted: #747474;
+      --border: #e4e4e1;
+
+      --success: #24753d;
+      --success-bg: #eaf5ed;
+
+      --warning: #916400;
+      --warning-bg: #fff4dc;
+
+      --danger: #a63b3b;
+      --danger-bg: #faeaea;
+
+      --radius-lg: 18px;
+      --radius-md: 12px;
+      --radius-sm: 9px;
+
+      --shadow: 0 8px 28px rgba(0, 0, 0, 0.04);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      font-family:
+        Inter,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Arial,
+        sans-serif;
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    /* =========================
+       APP SHELL
+    ========================= */
+
+    .app {
+      min-height: 100vh;
+      display: flex;
+    }
+
+    .sidebar {
+      width: 250px;
+      flex-shrink: 0;
+      background: #111111;
+      color: #ffffff;
+      padding: 22px 16px;
+
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 4px 8px 28px;
+    }
+
+    .brand-mark {
+      width: 38px;
+      height: 38px;
+
+      border-radius: 11px;
+      background: #ffffff;
+      color: #111111;
+
+      display: grid;
+      place-items: center;
+
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .brand-name {
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-subtitle {
+      margin-top: 2px;
+      font-size: 10px;
+      color: #9b9b9b;
+    }
+
+    .nav {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .nav-button {
+      width: 100%;
+      min-height: 44px;
+
+      border: 0;
+      border-radius: 10px;
+
+      background: transparent;
+      color: #a7a7a7;
+
+      padding: 0 12px;
+
+      display: flex;
+      align-items: center;
+      gap: 11px;
+
+      text-align: left;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .nav-button:hover,
+    .nav-button.active {
+      background: #222222;
+      color: #ffffff;
+    }
+
+    .nav-icon {
+      width: 18px;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    .sidebar-footer {
+      margin-top: auto;
+      padding: 16px 8px 4px;
+
+      border-top: 1px solid #292929;
+    }
+
+    .account-label {
+      color: #777777;
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-weight: 800;
+    }
+
+    .account-name {
+      margin-top: 6px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    /* =========================
+       MAIN
+    ========================= */
+
+    .main {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .topbar {
+      min-height: 72px;
+
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+
+      padding: 0 28px;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .page-title {
+      font-size: 18px;
+      font-weight: 850;
+      letter-spacing: -0.03em;
+    }
+
+    .page-context {
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .system-status {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--muted);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #bdbdbd;
+    }
+
+    .content {
+      width: 100%;
+      max-width: 1500px;
+      margin: 0 auto;
+      padding: 24px 28px 40px;
+    }
+
+    /* =========================
+       OVERVIEW CARDS
+    ========================= */
+
+    .overview-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+
+      margin-bottom: 18px;
+    }
+
+    .overview-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+
+      padding: 17px;
+
+      min-height: 108px;
+    }
+
+    .overview-label {
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .overview-value {
+      margin-top: 12px;
+
+      font-size: 28px;
+      line-height: 1;
+
+      font-weight: 850;
+      letter-spacing: -0.04em;
+    }
+
+    .overview-placeholder {
+      color: #c1c1c1;
+    }
+
+    .overview-description {
+      margin-top: 7px;
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    /* =========================
+       SECTION
+    ========================= */
+
+    .section {
+      margin-top: 18px;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+
+      margin-bottom: 10px;
+    }
+
+    .section-title {
+      font-size: 14px;
+      font-weight: 850;
+      letter-spacing: -0.02em;
+    }
+
+    .section-description {
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    .section-action {
+      min-height: 36px;
+
+      padding: 0 12px;
+
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+
+      background: var(--surface);
+      color: var(--text);
+
+      font-size: 10px;
+      font-weight: 750;
+    }
+
+    /* =========================
+       PANELS
+    ========================= */
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    /* =========================
+       LOGGED-IN RIDERS
+    ========================= */
+
+    .rider-toolbar {
+      padding: 13px 15px;
+
+      border-bottom: 1px solid var(--border);
+
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .search {
+      width: min(300px, 100%);
+      min-height: 38px;
+
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+
+      background: var(--surface);
+
+      padding: 0 11px;
+
+      font-size: 12px;
+      outline: none;
+    }
+
+    .search:focus {
+      border-color: #999999;
+    }
+
+    .rider-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .rider-table th {
+      padding: 11px 15px;
+
+      background: #fafaf9;
+      border-bottom: 1px solid var(--border);
+
+      color: var(--muted);
+
+      font-size: 9px;
+      font-weight: 800;
+
+      text-align: left;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .rider-table td {
+      padding: 14px 15px;
+      border-bottom: 1px solid #eeeeec;
+
+      font-size: 11px;
+    }
+
+    .rider-table tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .empty-row td {
+      height: 170px;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    .empty-icon {
+      width: 38px;
+      height: 38px;
+
+      margin: 0 auto 9px;
+
+      border-radius: 11px;
+      background: var(--surface-soft);
+
+      display: grid;
+      place-items: center;
+
+      color: #999999;
+      font-weight: 900;
+    }
+
+    .empty-title {
+      color: var(--text);
+      font-size: 12px;
+      font-weight: 750;
+    }
+
+    .empty-text {
+      margin-top: 4px;
+      font-size: 10px;
+    }
+
+    /* =========================
+       STATUS
+    ========================= */
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+
+      border-radius: 20px;
+      padding: 5px 8px;
+
+      font-size: 9px;
+      font-weight: 800;
+    }
+
+    .status-placeholder {
+      background: var(--surface-soft);
+      color: var(--muted);
+    }
+
+    .status-dot-small {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #bdbdbd;
+    }
+
+    /* =========================
+       DELIVERY GRID
+    ========================= */
+
+    .delivery-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.7fr);
+
+      gap: 14px;
+    }
+
+    .empty-panel {
+      min-height: 220px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      padding: 30px;
+      text-align: center;
+    }
+
+    /* =========================
+       RESPONSIVE
+    ========================= */
+
+    @media (max-width: 1000px) {
+      .sidebar {
+        width: 210px;
+      }
+
+      .overview-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .delivery-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .app {
+        display: block;
+      }
+
+      .sidebar {
+        width: 100%;
+        padding: 10px 12px;
+
+        flex-direction: row;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .brand {
+        padding: 0;
+        flex-shrink: 0;
+      }
+
+      .brand-subtitle,
+      .sidebar-footer {
+        display: none;
+      }
+
+      .nav {
+        flex-direction: row;
+        overflow-x: auto;
+        flex: 1;
+      }
+
+      .nav-button {
+        width: auto;
+        flex-shrink: 0;
+        padding: 0 10px;
+      }
+
+      .nav-button span:not(.nav-icon) {
+        display: none;
+      }
+
+      .topbar {
+        padding: 0 16px;
+      }
+
+      .content {
+        padding: 18px 14px 30px;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .overview-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .overview-card {
+        min-height: 98px;
+        padding: 13px;
+      }
+
+      .overview-value {
+        font-size: 24px;
+      }
+
+      .rider-toolbar {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .search {
+        width: 100%;
+      }
+
+      .rider-table {
+        min-width: 650px;
+      }
+
+      .table-scroll {
+        overflow-x: auto;
+      }
+
+      .page-context {
+        display: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="app">
+
+    <!-- =========================
+         SIDEBAR
+    ========================== -->
+
+    <aside class="sidebar">
+
+      <div class="brand">
+        <div class="brand-mark">AB</div>
+
+        <div>
+          <div class="brand-name">Access Bikes</div>
+          <div class="brand-subtitle">Fleet Management</div>
+        </div>
+      </div>
+
+      <nav class="nav" aria-label="Main navigation">
+
+        <button class="nav-button active" type="button">
+          <span class="nav-icon">⌂</span>
+          <span>Overview</span>
+        </button>
+
+        <button class="nav-button" type="button">
+          <span class="nav-icon">●</span>
+          <span>Riders</span>
+        </button>
+
+        <button class="nav-button" type="button">
+          <span class="nav-icon">↗</span>
+          <span>Deliveries</span>
+        </button>
+
+        <button class="nav-button" type="button">
+          <span class="nav-icon">◷</span>
+          <span>History</span>
+        </button>
+
+      </nav>
+
+      <div class="sidebar-footer">
+
+        <div class="account-label">
+          Fleet account
+        </div>
+
+        <div class="account-name">
+          Access Bikes
+        </div>
+
+      </div>
+
+    </aside>
+
+
+    <!-- =========================
+         MAIN
+    ========================== -->
+
+    <main class="main">
+
+      <header class="topbar">
+
+        <div>
+          <div class="page-title">
+            Fleet Dashboard
+          </div>
+
+          <div class="page-context">
+            Monitor riders and deliveries connected to Access Bikes
+          </div>
+        </div>
+
+        <div class="system-status">
+          <span class="status-dot"></span>
+          Awaiting connection
+        </div>
+
+      </header>
+
+
+      <div class="content">
+
+        <!-- =========================
+             OVERVIEW
+        ========================== -->
+
+        <section>
+
+          <div class="overview-grid">
+
+            <div class="overview-card">
+              <div class="overview-label">
+                Total Riders
+              </div>
+
+              <div class="overview-value overview-placeholder">
+                —
+              </div>
+
+              <div class="overview-description">
+                Registered with Access Bikes
+              </div>
+            </div>
+
+
+            <div class="overview-card">
+              <div class="overview-label">
+                Logged In
+              </div>
+
+              <div class="overview-value overview-placeholder">
+                —
+              </div>
+
+              <div class="overview-description">
+                Riders currently signed in
+              </div>
+            </div>
+
+
+            <div class="overview-card">
+              <div class="overview-label">
+                Delivering
+              </div>
+
+              <div class="overview-value overview-placeholder">
+                —
+              </div>
+
+              <div class="overview-description">
+                Riders on active deliveries
+              </div>
+            </div>
+
+
+            <div class="overview-card">
+              <div class="overview-label">
+                Completed Today
+              </div>
+
+              <div class="overview-value overview-placeholder">
+                —
+              </div>
+
+              <div class="overview-description">
+                Completed deliveries
+              </div>
+            </div>
+
+          </div>
+
+        </section>
+
+
+        <!-- =========================
+             LOGGED-IN RIDERS
+        ========================== -->
+
+        <section class="section">
+
+          <div class="section-header">
+
+            <div>
+              <div class="section-title">
+                Logged-in Riders
+              </div>
+
+              <div class="section-description">
+                Riders currently authenticated on the delivery network
+              </div>
+            </div>
+
+            <button
+              class="section-action"
+              type="button"
+              id="refreshRiders"
+            >
+              Refresh
+            </button>
+
+          </div>
+
+
+          <div class="panel">
+
+            <div class="rider-toolbar">
+
+              <input
+                class="search"
+                type="search"
+                id="riderSearch"
+                placeholder="Search riders..."
+                aria-label="Search riders"
+              >
+
+              <div class="status status-placeholder">
+                <span class="status-dot-small"></span>
+                No live connection
+              </div>
+
+            </div>
+
+
+            <div class="table-scroll">
+
+              <table class="rider-table">
+
+                <thead>
+
+                  <tr>
+                    <th>Rider</th>
+                    <th>Rider ID</th>
+                    <th>Login Status</th>
+                    <th>Current Status</th>
+                    <th>Last Activity</th>
+                  </tr>
+
+                </thead>
+
+                <tbody id="riderTableBody">
+
+                  <tr class="empty-row">
+
+                    <td colspan="5">
+
+                      <div class="empty-icon">
+                        —
+                      </div>
+
+                      <div class="empty-title">
+                        No rider data connected
+                      </div>
+
+                      <div class="empty-text">
+                        Logged-in riders will appear here once the rider source of truth is connected.
+                      </div>
+
+                    </td>
+
+                  </tr>
+
+                </tbody>
+
+              </table>
+
+            </div>
+
+          </div>
+
+        </section>
+
+
+        <!-- =========================
+             DELIVERIES
+        ========================== -->
+
+        <section class="section">
+
+          <div class="section-header">
+
+            <div>
+              <div class="section-title">
+                Delivery Monitoring
+              </div>
+
+              <div class="section-description">
+                Track active deliveries assigned to Access Bikes riders
+              </div>
+            </div>
+
+          </div>
+
+
+          <div class="delivery-grid">
+
+            <!-- ACTIVE DELIVERIES -->
+
+            <div class="panel">
+
+              <div class="rider-toolbar">
+
+                <div class="section-title">
+                  Active Deliveries
+                </div>
+
+                <div class="status status-placeholder">
+                  Awaiting data
+                </div>
+
+              </div>
+
+              <div class="empty-panel">
+
+                <div>
+
+                  <div class="empty-icon">
+                    ↗
+                  </div>
+
+                  <div class="empty-title">
+                    No active delivery data
+                  </div>
+
+                  <div class="empty-text">
+                    Active jobs will appear here when the delivery source is connected.
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <!-- TRACKING -->
+
+            <div class="panel">
+
+              <div class="rider-toolbar">
+
+                <div class="section-title">
+                  Live Tracking
+                </div>
+
+              </div>
+
+              <div class="empty-panel">
+
+                <div>
+
+                  <div class="empty-icon">
+                    ◎
+                  </div>
+
+                  <div class="empty-title">
+                    Select a delivery
+                  </div>
+
+                  <div class="empty-text">
+                    Rider location and delivery progress will appear here.
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </section>
+
+
+        <!-- =========================
+             HISTORY
+        ========================== -->
+
+        <section class="section">
+
+          <div class="section-header">
+
+            <div>
+              <div class="section-title">
+                Delivery History
+              </div>
+
+              <div class="section-description">
+                Historical delivery activity for the Access Bikes fleet
+              </div>
+            </div>
+
+            <button
+              class="section-action"
+              type="button"
+            >
+              View History
+            </button>
+
+          </div>
+
+          <div class="panel">
+
+            <div class="empty-panel">
+
+              <div>
+
+                <div class="empty-icon">
+                  ◷
+                </div>
+
+                <div class="empty-title">
+                  No delivery history connected
+                </div>
+
+                <div class="empty-text">
+                  Historical deliveries will be available once the delivery database is connected.
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </section>
+
+      </div>
+
+    </main>
+
+  </div>
+
+
+  <script>
+    /*
+      ACCESS BIKES DASHBOARD
+
+      This file intentionally contains NO operational/mock data.
+
+      Future source-of-truth integration can populate:
+
+      - Total riders
+      - Logged-in riders
+      - Rider authentication state
+      - Rider availability
+      - Active deliveries
+      - Delivery status
+      - Rider location
+      - Delivery history
+
+      Suggested future architecture:
+
+      Access Bikes Dashboard
+              ↓
+      Your API / Cloudflare Worker
+              ↓
+      Rider + Delivery Source of Truth
+              ↓
+      D1 / Authentication / Connected Apps
+    */
+
+    const riderSearch = document.getElementById("riderSearch");
+    const refreshRiders = document.getElementById("refreshRiders");
+
+    /*
+      Search is intentionally prepared for the future
+      rider dataset. No fake records are inserted.
+    */
+
+    riderSearch.addEventListener("input", function () {
+      const searchTerm = this.value.trim().toLowerCase();
+
+      /*
+        Future implementation:
+
+        filterRiders(searchTerm);
+
+        The function will filter the real rider
+        dataset once the source of truth is connected.
+      */
+
+      if (searchTerm.length > 0) {
+        console.log("Rider search:", searchTerm);
+      }
+    });
+
+    refreshRiders.addEventListener("click", function () {
+      /*
+        Future implementation:
+
+        await loadRiders();
+
+        This button is intentionally not connected
+        to a fake endpoint.
+      */
+
+      refreshRiders.textContent = "Refresh";
+    });
+  </script>
+
+</body>
+  </html>
